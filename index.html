@@ -4,43 +4,401 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Premium JS Quiz App</title>
+  <!-- Google Fonts: Plus Jakarta Sans for premium modern look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #1a1528 0%, #0b0f19 100%);
+      --card-bg: rgba(15, 17, 28, 0.75);
+      --card-border: rgba(255, 255, 255, 0.06);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --primary-glow: rgba(139, 92, 246, 0.15);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.15);
+      --rose: #f43f5e;
+      --radius-lg: 24px;
+      --radius-md: 14px;
+      --transition-base: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+      perspective: 1000px;
+    }
+
+    /* Glassmorphism Card Container */
+    .quiz-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 
+                  0 0 40px rgba(139, 92, 246, 0.05);
+      transition: var(--transition-base);
+    }
+
+    /* Quiz App Header */
+    .quiz-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .quiz-header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .quiz-header p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* Progress Indicators */
+    .progress-container {
+      margin-bottom: 35px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .progress-label {
+      color: var(--text-muted);
+    }
+
+    .progress-percentage {
+      color: var(--primary);
+    }
+
+    .progress-bar-bg {
+      background: rgba(255, 255, 255, 0.05);
+      height: 6px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+
+    /* Question Container & Text */
+    #question-text {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.45;
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+    }
+
+    /* Choice Options Container */
+    #choices-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    /* Premium Option Cards */
+    .choice-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      outline: none;
+    }
+
+    .choice-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(139, 92, 246, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .choice-card:active {
+      transform: translateY(0);
+    }
+
+    /* Option Selected Highlight */
+    .choice-card.selected {
+      background: var(--primary-glow);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+      font-weight: 600;
+    }
+
+    /* Action Navigation Row */
+    .action-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    /* Premium Pill Navigation Buttons */
+    .btn-pill {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 28px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-base);
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-start-test, .btn-end-test {
+      width: 100%;
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-start-test:hover, .btn-end-test:hover {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-prev-nav {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    .btn-prev-nav:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-next-nav {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      box-shadow: 0 6px 16px rgba(139, 92, 246, 0.25);
+    }
+
+    .btn-next-nav:hover:not(:disabled) {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
+    }
+
+    .btn-next-nav:disabled {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.6;
+    }
+
+    /* Premium Results Dashboard Widget */
+    .congratulations-msg {
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: center;
+      color: #34d399; /* emerald green text */
+      margin-bottom: 25px;
+      line-height: 1.4;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.01);
+      margin-top: 15px;
+    }
+
+    .table th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: left;
+    }
+
+    .table td {
+      padding: 14px 16px;
+      color: var(--text-main);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.875rem;
+    }
+
+    .table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .table tr {
+      transition: background-color 0.2s ease;
+    }
+
+    .table tr:hover td {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Green badge for correct answers in result table */
+    .badge-correct {
+      display: inline-block;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      background: var(--emerald-glow);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    /* Smooth Fade-in Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in-active {
+      animation: fadeInUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    /* Custom Scrollbar for Card (in case of long tables) */
+    .quiz-card::-webkit-scrollbar {
+      width: 6px;
+    }
+    .quiz-card::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .quiz-card::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="container h-75 mt-5" style="max-width: 600px;">
-    <div class="card shadow-sm">
+  <div class="container">
+    <div class="quiz-card" id="quiz-card-wrapper">
+      
+      <!-- Top Brand Header -->
+      <div class="quiz-header">
+        <h1>Interactive Quiz</h1>
+        <p>Test your knowledge in JavaScript & Frontend Development</p>
+      </div>
 
-      <div class="card-body p-4" id="container">
-
-        <h3 id="question-text" class="card-title mb-4 text-center text-dark">
-          Question text will go here...
-        </h3>
-
-        <div id="choices-container" class="gap-2 mb-4 flex-wrap" style="display: none;">
-          <button class="btn btn-primary" id="option1" onclick="getOption(this)"></button>
-          <button class="btn btn-primary" id="option2" onclick="getOption(this)"></button>
-          <button class="btn btn-primary" id="option3" onclick="getOption(this)"></button>
-          <button class="btn btn-primary" id="option4" onclick="getOption(this)"></button>
+      <!-- Custom Progress Bar -->
+      <div class="progress-container" id="progress-container" style="display: none;">
+        <div class="progress-info">
+          <span class="progress-label" id="progress-text">Question 1 of 10</span>
+          <span class="progress-percentage" id="progress-percentage">10%</span>
         </div>
-
-        <div>
-          <button id="startBtn" class="btn btn-success btn-md w-100" onclick='startTest()'>Start Test</button>
-          <button id="endBtn" class="btn btn-success btn-md w-100" style="display: none;" onclick='endBtn()'>End
-            Test</button>
-        </div>
-
-        <div id="btn" style="display: none;">
-          <button id="prev-btn" class="btn btn-success btn-md w-100 me-2" onclick='prev()'>Prev</button>
-          <button id="next-btn" class="btn btn-success btn-md w-100 " onclick='next()' disabled>Next</button>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
       </div>
+
+      <!-- Main card body content containing the question and choices -->
+      <div id="container">
+        <h3 id="question-text">
+          Ready to start the quiz challenge? Click below to begin.
+        </h3>
+
+        <!-- Styled Option Button Stack -->
+        <div id="choices-container" style="display: none;">
+          <button class="choice-card" id="option1" onclick="getOption(this)"></button>
+          <button class="choice-card" id="option2" onclick="getOption(this)"></button>
+          <button class="choice-card" id="option3" onclick="getOption(this)"></button>
+          <button class="choice-card" id="option4" onclick="getOption(this)"></button>
+        </div>
+
+        <!-- Initial Start and Final Submit Buttons -->
+        <div>
+          <button id="startBtn" class="btn-pill btn-start-test" onclick="startTest()">Start Test</button>
+          <button id="endBtn" class="btn-pill btn-end-test" style="display: none;" onclick="endBtn()">End Test</button>
+        </div>
+
+        <!-- Prev/Next Navigation Controls -->
+        <div id="btn" class="action-row" style="display: none;">
+          <button id="prev-btn" class="btn-pill btn-prev-nav" onclick="prev()">Prev</button>
+          <button id="next-btn" class="btn-pill btn-next-nav" onclick="next()" disabled>Next</button>
+        </div>
+      </div>
+
     </div>
   </div>
+
   <script>
     let optionSelected = false;
-    let score = 0
+    let score = 0;
     let correctAnser;
     let quiz = [
       {
@@ -55,7 +413,6 @@
         options: ["Central Style Sheets", "Cascading Style Sheets", "Cascading Simple Sheets", "Cars SUVs Sailboats"],
         correct: "Cascading Style Sheets"
       },
-
       {
         num: 3,
         question: "Which HTML element is used for JavaScript?",
@@ -78,13 +435,13 @@
         num: 6,
         question: "Which loop runs at least once before checking its condition?",
         options: ["for loop", "while loop", "do...while loop", "for...of loop"],
-        correct: "while loop"
+        correct: "do...while loop"
       },
       {
         num: 7,
         question: "Which loop runs at least once before checking its condition?",
         options: ["for loop", "while loop", "do...while loop", "for...of loop"],
-        correct: "while loop"
+        correct: "do...while loop"
       },
       {
         num: 8,
@@ -104,42 +461,62 @@
         options: ["Adds to the front", "Removes from the front", "Removes from the end", "Adds to the end"],
         correct: "Removes from the end"
       }
+    ];
 
-    ]
-    let currentQuestionIndex = 1
+    let currentQuestionIndex = 1;
+
     const startTest = () => {
       displayQuestion = document.getElementById('question-text');
-      displayOption1 = document.getElementById('option1')
-      displayOption2 = document.getElementById('option2')
-      displayOption3 = document.getElementById('option3')
-      displayOption4 = document.getElementById('option4')
-optionSelected = false;
+      displayOption1 = document.getElementById('option1');
+      displayOption2 = document.getElementById('option2');
+      displayOption3 = document.getElementById('option3');
+      displayOption4 = document.getElementById('option4');
+      optionSelected = false;
       document.getElementById('next-btn').disabled = true;
-      // console.log(displayQuestion);
+
+      // Clear previous choice highlights
+      [displayOption1, displayOption2, displayOption3, displayOption4].forEach(btn => {
+        btn.classList.remove('selected');
+      });
+
+      // Update Custom Progress Indicator
+      const progressContainer = document.getElementById('progress-container');
+      if (progressContainer) {
+        progressContainer.style.display = 'block';
+        const pct = Math.round((currentQuestionIndex / quiz.length) * 100);
+        document.getElementById('progress-fill').style.width = `${pct}%`;
+        document.getElementById('progress-text').innerText = `Question ${currentQuestionIndex} of ${quiz.length}`;
+        document.getElementById('progress-percentage').innerText = `${pct}%`;
+      }
+
+      // Fade-in animation triggers when new question loads
+      const contentContainer = document.getElementById('container');
+      contentContainer.classList.remove('fade-in-active');
+      void contentContainer.offsetWidth; // Force layout recalculation to restart keyframe animation
+      contentContainer.classList.add('fade-in-active');
 
       for (let i = 0; i < quiz.length; i++) {
-        // const element = array[index];
         if (quiz[i].num == currentQuestionIndex) {
-          // console.log(quiz[i].question);
-          document.getElementById('choices-container').style.display = `flex`
-          displayQuestion.innerText = `${quiz[i].question}`
-          displayOption1.innerHTML = `${quiz[i].options[0]}`
-          displayOption2.innerHTML = `${quiz[i].options[1]}`
-          displayOption3.innerHTML = `${quiz[i].options[2]}`
-          displayOption4.innerHTML = `${quiz[i].options[3]}`
-          correctAnser = quiz[i].correct
+          document.getElementById('choices-container').style.display = `flex`;
+          displayQuestion.innerText = `${quiz[i].question}`;
+          displayOption1.innerHTML = `${quiz[i].options[0]}`;
+          displayOption2.innerHTML = `${quiz[i].options[1]}`;
+          displayOption3.innerHTML = `${quiz[i].options[2]}`;
+          displayOption4.innerHTML = `${quiz[i].options[3]}`;
+          correctAnser = quiz[i].correct;
+          
           if (quiz[i].num != quiz.length) {
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('btn').style.display = 'flex';
           } else {
-            document.getElementById('startBtn').style.display = 'none'
-            document.getElementById('endBtn').style.display = 'block'
-            document.getElementById('btn').style.display = 'none'
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('endBtn').style.display = 'block';
+            document.getElementById('btn').style.display = 'none';
           }
         }
       }
+    };
 
-    }
     const getOption = (clickedBtn) => {
       if (optionSelected) return;
       let selectedOption = clickedBtn.innerText;
@@ -147,34 +524,54 @@ optionSelected = false;
         score++;
         console.log(score);
       }
+      
+      // Highlight the selected option card
+      clickedBtn.classList.add('selected');
+      
       optionSelected = true;
       document.getElementById('next-btn').disabled = false;
       currentQuestionIndex += 1;
-    }
+    };
+
     const next = () => {
       startTest();
-    }
+    };
 
     const endBtn = () => {
-      let container = document.getElementById('container')
-      let htmlContent = `<h4 class="text-success text-center">Congratulations on completing the test, your score is ${score} </h4> <br>
+      // Hide progress indicator on completion screen
+      const progressContainer = document.getElementById('progress-container');
+      if (progressContainer) {
+        progressContainer.style.display = 'none';
+      }
+
+      let container = document.getElementById('container');
+      let htmlContent = `<h4 class="congratulations-msg">🎉 Congratulations on completing the test!<br>Your score is ${score} / ${quiz.length}</h4>
       <table class="table">
-    <tr>
-      <th>S/N</th>
-      <th>Question</th>
-      <th>Correct Answer</th>
-    </tr>
-`
+        <thead>
+          <tr>
+            <th>S/N</th>
+            <th>Question</th>
+            <th>Correct Answer</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      
       for (let i = 0; i < quiz.length; i++) {
         htmlContent += `<tr>
-  <td scope="row">${quiz[i].num}</td>
-  <td scope="row">${quiz[i].question}</td>
-  <td scope="row">${quiz[i].correct}</td>
-</tr>`
+          <td>${quiz[i].num}</td>
+          <td>${quiz[i].question}</td>
+          <td><span class="badge-correct">${quiz[i].correct}</span></td>
+        </tr>`;
       }
-      htmlContent += `</table>`
-      container.innerHTML = htmlContent
-    }
+      htmlContent += `</tbody></table>`;
+      
+      // Re-trigger animation for the final result presentation
+      container.classList.remove('fade-in-active');
+      void container.offsetWidth;
+      container.classList.add('fade-in-active');
+      
+      container.innerHTML = htmlContent;
+    };
 
     const prev = () => {
       if (currentQuestionIndex > 1) {
@@ -183,7 +580,7 @@ optionSelected = false;
         optionSelected = true; 
         document.getElementById('next-btn').disabled = false;
       }
-    }
+    };
   </script>
 </body>
 
