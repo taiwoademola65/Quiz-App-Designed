@@ -34,21 +34,21 @@ let quiz = [
   },
   {
     num: 6,
-    question: "Which loop runs at least once before checking its condition?",
-    options: ["for loop", "while loop", "do...while loop", "for...of loop"],
-    correct: "do...while loop"
+    question: "Which of the following is used to declare a block-scoped variable that cannot be reassigned?",
+    options: ["var", "let", "const", "set"],
+    correct: "const"
   },
   {
     num: 7,
-    question: "Which loop runs at least once before checking its condition?",
-    options: ["for loop", "while loop", "do...while loop", "for...of loop"],
-    correct: "do...while loop"
+    question: "Which method is used to add one or more elements to the end of an array?",
+    options: ["push()", "pop()", "shift()", "unshift()"],
+    correct: "push()"
   },
   {
     num: 8,
-    question: "What is the index of the FIRST element in a JavaScript array?",
-    options: ["1", "-1", "0", "undefined"],
-    correct: "0"
+    question: "Which operator is used to check both the value and the type of a variable?",
+    options: ["=", "==", "===", "!=="],
+    correct: "==="
   },
   {
     num: 9,
